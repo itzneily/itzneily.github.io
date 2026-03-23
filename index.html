@@ -325,7 +325,43 @@ body::after {
   font-size: 9.5px; color: var(--ink-soft);
   letter-spacing: 0.05em; opacity: 0.65;
 }
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  /* 1. Push strips to the background */
+  .strip {
+    z-index: 0 !important; /* Higher numbers are "closer" to you; 0 is the back */
+    opacity: 0.6;          /* Making them slightly transparent helps legibility */
+    pointer-events: none;  /* Prevents the strips from blocking clicks on buttons */
+  }
 
+  /* 2. Ensure the center cards stay on top */
+  .center-container {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* 3. Adjust Strip positions so they don't cover the text */
+  .strip-left {
+    left: -20px;
+    transform: scale(0.8); /* Shrink them slightly for small screens */
+  }
+
+  .strip-right {
+    right: -20px;
+    transform: scale(0.8);
+  }
+
+  /* 4. Fix Satellite Cards from overlapping */
+  .satellite-card {
+    position: relative !important; /* Changes from absolute to relative to stack vertically */
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    margin: 20px auto;
+    width: 90%;
+    transform: none !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -506,7 +542,7 @@ body::after {
     <span class="photo-caption">— weave —</span>
   </div>
   <div class="photo-frame" style="transform:rotate(-1.6deg)">
-    <img src="photo6.jpeg" style="object-position:50% 10%" alt="Design 1"/>    
+    <img src="photo6.jpg" style="object-position:50% 10%" alt="Design 1"/>    
     <span class="photo-caption">✦</span>
   </div>
 </div>
