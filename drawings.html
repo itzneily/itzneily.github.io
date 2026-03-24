@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Drawings — Neelima Asok</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;1,200;1,300&family=Cinzel:wght@300;400&family=Caveat:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --deep:    #0b1a3a;
+  --mid:     #1a2a5a;
+  --navy:    #0d1f3c;
+  --gold:    #f6e27a;
+  --glow:    #ffd76a;
+  --white:   #f5f5f5;
+  --glass:   rgba(10,20,55,0.62);
+  --border:  rgba(246,226,122,0.12);
+}
+
+html{ scroll-behavior:smooth }
+body{
+  min-height:100vh;
+  background: var(--deep);
+  font-family:'Cormorant Garamond',serif;
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ════════════════════════════════
+   STARRY NIGHT BACKGROUND
+   ════════════════════════════════ */
+.sky{
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 120% 80% at 70% 0%,   #1e3a78 0%, transparent 55%),
+    radial-gradient(ellipse 80%  60% at 20% 100%,  #0e2255 0%, transparent 60%),
+    radial-gradient(ellipse 100% 70% at 50% 50%,   #0b1a3a 0%, #060f20 100%);
+  overflow:hidden;
+}
+
+/* Shooting star canvas */
+#swirl{ position:absolute; inset:0; pointer-events:none; }
+
+/* Star dots */
+.stars{
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,220,80,.8) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 28% 8%,  rgba(255,230,100,.9) 0%, transparent 100%),
+    radial-gradient(1px 1px at 44% 22%, rgba(246,226,122,.7) 0%, transparent 100%),
+    radial-gradient(2px 2px at 60% 5%,  rgba(255,240,120,1.0) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 15%, rgba(246,226,122,.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 88% 28%, rgba(255,220,80,.8) 0%, transparent 100%),
+    radial-gradient(1px 1px at 33% 40%, rgba(200,200,255,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 35%, rgba(246,226,122,.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 80% 42%, rgba(255,235,100,.7) 0%, transparent 100%),
+    radial-gradient(1px 1px at 8%  55%, rgba(200,210,255,.4) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 92% 60%, rgba(255,220,80,.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 48% 70%, rgba(246,226,122,.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 18% 82%, rgba(200,200,255,.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 65% 78%, rgba(255,220,80,.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 36% 90%, rgba(246,226,122,.3) 0%, transparent 100%);
+}
+
+/* Glowing moon/sun orb top-right */
+.orb{
+  position:absolute; top:-60px; right:8%;
+  width:220px; height:220px; border-radius:50%;
+  background: radial-gradient(circle, rgba(255,235,100,.55) 0%, rgba(255,200,50,.25) 40%, transparent 70%);
+  animation: pulse 6s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{ transform:scale(1);   opacity:.55 }
+  50%{     transform:scale(1.08);opacity:.75 }
+}
+
+/* Overlay so text stays readable */
+.sky-overlay{
+  position:fixed; inset:0; z-index:1;
+  background: linear-gradient(
+    to bottom,
+    rgba(6,12,30,.25) 0%,
+    rgba(6,12,30,.10) 40%,
+    rgba(6,12,30,.30) 100%
+  );
+  pointer-events:none;
+}
+
+/* ════════════════════════════════
+   CURSOR
+   ════════════════════════════════ */
+.cur{ position:fixed;width:7px;height:7px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen }
+.cur-ring{ position:fixed;width:30px;height:30px;border:1px solid rgba(246,226,122,.38);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s }
+
+/* ════════════════════════════════
+   PAGE LAYOUT
+   ════════════════════════════════ */
+.page{
+  position:relative; z-index:2;
+  max-width:1280px; margin:0 auto;
+  padding:0 32px 100px;
+}
+
+/* ── Top nav ── */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:36px 0 52px;
+  border-bottom:1px solid rgba(246,226,122,.08);
+  margin-bottom:60px;
+  animation: fadeDown .7s ease both;
+}
+@keyframes fadeDown{ from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:none} }
+
+.back-link{
+  font-family:'Cinzel',serif; font-size:11px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(246,226,122,.5); text-decoration:none;
+  display:flex; align-items:center; gap:8px;
+  transition:color .3s;
+}
+.back-link::before{ content:'←'; font-size:13px }
+.back-link:hover{ color:var(--gold) }
+.nav-name{
+  font-family:'Cinzel',serif; font-size:10px; font-weight:300;
+  letter-spacing:.32em; text-transform:uppercase;
+  color:rgba(246,226,122,.22);
+}
+
+/* ── Hero ── */
+.hero{ margin-bottom:64px; animation: fadeUp .9s ease .1s both }
+@keyframes fadeUp{ from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:200; font-style:italic;
+  font-size:clamp(58px,9vw,116px);
+  line-height:.92; padding-bottom:.1em;
+  background: linear-gradient(135deg, #fffbe8 0%, #f6e27a 25%, #ffd76a 50%, #f0c840 70%, #fff5b0 90%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter:drop-shadow(0 0 28px rgba(255,215,90,.22));
+}
+.hero-sub{
+  font-family:'Cinzel',serif; font-size:10.5px; font-weight:300;
+  letter-spacing:.35em; text-transform:uppercase;
+  color:rgba(246,226,122,.38); margin-top:18px;
+}
+.hero-rule{
+  width:70px; height:1px;
+  background:linear-gradient(to right,var(--gold),transparent);
+  margin-top:20px; opacity:0;
+  animation: drawRule 1.4s cubic-bezier(.4,0,.2,1) .8s forwards;
+}
+@keyframes drawRule{
+  0%{opacity:0;clip-path:inset(0 100% 0 0)}
+  8%{opacity:.55}
+  100%{opacity:.55;clip-path:inset(0 0% 0 0)}
+}
+
+/* ── Filter bar ── */
+.filters{
+  display:flex; gap:10px; flex-wrap:wrap;
+  margin-bottom:44px;
+  animation: fadeUp .7s ease .25s both;
+}
+.filter-btn{
+  font-family:'Cinzel',serif; font-size:9.5px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(246,226,122,.45);
+  background:rgba(10,20,55,.5);
+  border:1px solid rgba(246,226,122,.12);
+  border-radius:30px; padding:7px 18px;
+  cursor:pointer; transition:all .28s ease;
+}
+.filter-btn:hover,
+.filter-btn.active{
+  color:var(--gold);
+  border-color:rgba(246,226,122,.45);
+  background:rgba(246,226,122,.08);
+  box-shadow:0 0 16px rgba(255,215,90,.12);
+}
+
+/* ════════════════════════════════
+   GRID
+   ════════════════════════════════ */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+  gap:28px;
+}
+
+/* ════════════════════════════════
+   ART CARD
+   ════════════════════════════════ */
+.art-card{
+  background: var(--glass);
+  backdrop-filter:blur(14px) saturate(1.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+  opacity:0; transform:translateY(24px);
+  transition:
+    transform .38s cubic-bezier(.22,.68,0,1.15),
+    box-shadow .38s ease,
+    border-color .38s ease,
+    opacity .4s ease;
+}
+.art-card.visible{
+  opacity:1; transform:translateY(0);
+}
+.art-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  border-color:rgba(246,226,122,.28);
+  box-shadow:
+    0 12px 40px rgba(10,20,60,.5),
+    0 0 0 1px rgba(246,226,122,.08),
+    0 0 30px rgba(255,215,90,.08);
+}
+
+/* Image container — 3:4 ratio */
+.card-img-wrap{
+  position:relative;
+  width:100%; padding-top:133.33%; /* 3:4 */
+  overflow:hidden; background:#060f22;
+}
+.card-img-wrap img{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover; display:block;
+  transition:transform .5s ease, filter .4s ease;
+  filter:brightness(.88) saturate(1.05);
+}
+.art-card:hover .card-img-wrap img{
+  transform:scale(1.06);
+  filter:brightness(1) saturate(1.1);
+}
+
+/* Multi-image indicator */
+.img-count{
+  position:absolute; bottom:10px; right:10px;
+  font-family:'Cinzel',serif; font-size:8.5px; font-weight:300;
+  letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(246,226,122,.7);
+  background:rgba(6,15,34,.65);
+  padding:3px 9px; border-radius:3px;
+  backdrop-filter:blur(4px);
+}
+
+/* Hover overlay */
+.card-overlay{
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(6,15,40,.78) 0%, transparent 55%);
+  opacity:0; transition:opacity .32s ease;
+  display:flex; align-items:flex-end; justify-content:center;
+  padding-bottom:18px;
+}
+.art-card:hover .card-overlay{ opacity:1 }
+.overlay-hint{
+  font-family:'Cinzel',serif; font-size:9px; font-weight:300;
+  letter-spacing:.25em; text-transform:uppercase;
+  color:rgba(246,226,122,.8);
+}
+
+/* Placeholder frame (no image) */
+.placeholder{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:10px;
+}
+.placeholder svg{ opacity:.2 }
+.placeholder-label{
+  font-family:'Caveat',cursive; font-size:14px;
+  color:rgba(246,226,122,.25); letter-spacing:.06em;
+}
+
+/* Card info */
+.card-info{
+  padding:14px 16px 16px;
+}
+.card-title-txt{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300; font-style:italic;
+  font-size:16px; color:rgba(245,245,245,.85);
+  margin-bottom:4px; line-height:1.2;
+}
+.card-medium{
+  font-family:'Cinzel',serif; font-size:8.5px; font-weight:300;
+  letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(246,226,122,.32);
+}
+
+/* Dot indicators */
+.card-dots{
+  display:flex; gap:5px; margin-top:10px;
+}
+.dot{
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(246,226,122,.22);
+  transition:background .2s;
+}
+.dot.active{ background:rgba(246,226,122,.65) }
+
+/* ════════════════════════════════
+   LIGHTBOX
+   ════════════════════════════════ */
+.lb{
+  position:fixed; inset:0; z-index:1000;
+  background:rgba(2,5,15,0);
+  display:none; flex-direction:column;
+  align-items:center; justify-content:center;
+  transition:background .3s ease;
+}
+.lb.open{
+  display:flex;
+  background:rgba(2,5,15,.96);
+}
+
+.lb-img-wrap{
+  position:relative;
+  max-width:88vw; max-height:84vh;
+  display:flex; align-items:center; justify-content:center;
+}
+.lb-img{
+  max-width:88vw; max-height:82vh;
+  object-fit:contain; display:block;
+  border-radius:4px;
+  transition:opacity .22s ease, transform .35s ease;
+  cursor:zoom-in;
+  box-shadow:0 0 60px rgba(0,0,0,.8), 0 0 0 1px rgba(246,226,122,.06);
+}
+.lb-img.zoomed{ transform:scale(1.85); cursor:zoom-out }
+.lb-img.fading{ opacity:0 }
+
+.lb-close{
+  position:fixed; top:22px; right:26px;
+  width:38px; height:38px; border-radius:50%;
+  background:rgba(10,20,55,.6); border:1px solid rgba(246,226,122,.18);
+  color:rgba(246,226,122,.65); font-size:16px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .22s; font-family:sans-serif;
+}
+.lb-close:hover{ background:rgba(30,50,120,.7); color:var(--gold); border-color:rgba(246,226,122,.5) }
+
+.lb-nav{
+  position:fixed; top:50%; transform:translateY(-50%);
+  width:46px; height:46px; border-radius:50%;
+  background:rgba(10,20,55,.55); border:1px solid rgba(246,226,122,.14);
+  color:rgba(246,226,122,.55); font-size:22px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .22s; font-family:sans-serif;
+}
+.lb-nav:hover{ background:rgba(30,50,120,.65); color:var(--gold); border-color:rgba(246,226,122,.45) }
+.lb-prev{ left:18px }
+.lb-next{ right:18px }
+
+.lb-counter{
+  position:fixed; bottom:22px;
+  font-family:'Cinzel',serif; font-size:10px; font-weight:300;
+  letter-spacing:.25em; color:rgba(246,226,122,.38);
+}
+
+.lb-title-bar{
+  position:fixed; bottom:50px;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.lb-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px; font-weight:300; font-style:italic;
+  color:rgba(245,245,245,.7);
+}
+.lb-medium{
+  font-family:'Cinzel',serif; font-size:9px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(246,226,122,.3);
+}
+
+/* Thumbnail strip in lightbox */
+.lb-thumbs{
+  position:fixed; bottom:80px;
+  display:flex; gap:8px; padding:0 20px;
+  max-width:90vw; overflow-x:auto;
+}
+.lb-thumbs::-webkit-scrollbar{ height:2px; background:transparent }
+.lb-thumbs::-webkit-scrollbar-thumb{ background:rgba(246,226,122,.2) }
+.lb-thumb{
+  width:52px; height:52px; flex-shrink:0;
+  object-fit:cover; border-radius:4px;
+  cursor:pointer; opacity:.4;
+  border:1.5px solid transparent;
+  transition:opacity .22s, border-color .22s, transform .2s;
+}
+.lb-thumb.active,
+.lb-thumb:hover{ opacity:1; border-color:var(--gold); transform:scale(1.06) }
+
+/* ════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════ */
+@media(max-width:600px){
+  .page{ padding:0 16px 80px }
+  .grid{ grid-template-columns:repeat(2,1fr); gap:14px }
+  .topbar{ padding:24px 0 36px; margin-bottom:36px }
+  .hero-title{ font-size:clamp(46px,12vw,72px) }
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="ring"></div>
+
+<!-- Sky background -->
+<div class="sky">
+  <canvas id="swirl"></canvas>
+  <div class="stars"></div>
+  <div class="orb"></div>
+</div>
+<div class="sky-overlay"></div>
+
+<!-- Lightbox -->
+<div class="lb" id="lb">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <div class="lb-img-wrap">
+    <img class="lb-img" id="lbImg" src="" alt=""/>
+  </div>
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+  <div class="lb-title-bar">
+    <div class="lb-title" id="lbTitle"></div>
+    <div class="lb-medium" id="lbMedium"></div>
+  </div>
+  <div class="lb-thumbs" id="lbThumbs"></div>
+  <div class="lb-counter" id="lbCounter"></div>
+</div>
+
+<!-- Page -->
+<div class="page">
+
+  <nav class="topbar">
+    <a class="back-link" href="index.html">Portfolio</a>
+    <div class="nav-name">Neelima Asok</div>
+  </nav>
+
+  <header class="hero">
+    <h1 class="hero-title">Drawings</h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">Sketches &nbsp;·&nbsp; Illustrations &nbsp;·&nbsp; Studies</p>
+  </header>
+
+  <!-- Filters -->
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="sketch">Sketches</button>
+    <button class="filter-btn" data-filter="illustration">Illustrations</button>
+    <button class="filter-btn" data-filter="study">Studies</button>
+    <button class="filter-btn" data-filter="qr">QR Art</button>
+  </div>
+
+  <!-- Grid -->
+  <!-- 
+    HOW TO ADD YOUR DRAWINGS:
+    Each .art-card needs:
+      data-category = "sketch" | "illustration" | "study" | "qr"
+      data-images   = JSON array of image paths  e.g. '["drawing1.jpg","drawing2.jpg"]'
+      data-title    = artwork title
+      data-medium   = medium / type
+
+    Inside .card-img-wrap put your <img src="your-file.jpg"/>
+    If multiple images, add data-images with all paths and show dots.
+  -->
+  <div class="grid" id="grid">
+
+    <!-- PLACEHOLDER CARD 1 -->
+    <div class="art-card" data-category="sketch" data-images='["drawing-placeholder.jpg"]' data-title="Untitled Sketch" data-medium="Pencil on paper">
+      <div class="card-img-wrap">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#f6e27a" stroke-width="1.2"/><path d="M6 32l10-10 8 8 6-6 12 12" stroke="#f6e27a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="18" r="3" stroke="#f6e27a" stroke-width="1"/></svg>
+          <span class="placeholder-label">Add your drawing here</span>
+        </div>
+        <div class="card-overlay"><span class="overlay-hint">View</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title-txt">Untitled Sketch</div>
+        <div class="card-medium">Pencil on paper</div>
+        <div class="card-dots"><div class="dot active"></div></div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER CARD 2 -->
+    <div class="art-card" data-category="illustration" data-images='["drawing-placeholder.jpg","drawing-placeholder.jpg"]' data-title="Floral Study" data-medium="Ink & Watercolour">
+      <div class="card-img-wrap">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#f6e27a" stroke-width="1.2"/><path d="M6 32l10-10 8 8 6-6 12 12" stroke="#f6e27a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="18" r="3" stroke="#f6e27a" stroke-width="1"/></svg>
+          <span class="placeholder-label">Add your drawing here</span>
+        </div>
+        <div class="img-count">2 images</div>
+        <div class="card-overlay"><span class="overlay-hint">View</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title-txt">Floral Study</div>
+        <div class="card-medium">Ink &amp; Watercolour</div>
+        <div class="card-dots"><div class="dot active"></div><div class="dot"></div></div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER CARD 3 -->
+    <div class="art-card" data-category="study" data-images='["drawing-placeholder.jpg"]' data-title="Figure Study" data-medium="Charcoal">
+      <div class="card-img-wrap">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#f6e27a" stroke-width="1.2"/><path d="M6 32l10-10 8 8 6-6 12 12" stroke="#f6e27a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="18" r="3" stroke="#f6e27a" stroke-width="1"/></svg>
+          <span class="placeholder-label">Add your drawing here</span>
+        </div>
+        <div class="card-overlay"><span class="overlay-hint">View</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title-txt">Figure Study</div>
+        <div class="card-medium">Charcoal</div>
+        <div class="card-dots"><div class="dot active"></div></div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER CARD 4 -->
+    <div class="art-card" data-category="qr" data-images='["drawing-placeholder.jpg","drawing-placeholder.jpg","drawing-placeholder.jpg"]' data-title="QR Composition I" data-medium="Digital & Ink">
+      <div class="card-img-wrap">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#f6e27a" stroke-width="1.2"/><path d="M6 32l10-10 8 8 6-6 12 12" stroke="#f6e27a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="18" r="3" stroke="#f6e27a" stroke-width="1"/></svg>
+          <span class="placeholder-label">Add your drawing here</span>
+        </div>
+        <div class="img-count">+2 images</div>
+        <div class="card-overlay"><span class="overlay-hint">View</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title-txt">QR Composition I</div>
+        <div class="card-medium">Digital &amp; Ink</div>
+        <div class="card-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER CARD 5 -->
+    <div class="art-card" data-category="sketch" data-images='["drawing-placeholder.jpg"]' data-title="Portrait Study" data-medium="Graphite">
+      <div class="card-img-wrap">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#f6e27a" stroke-width="1.2"/><path d="M6 32l10-10 8 8 6-6 12 12" stroke="#f6e27a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="18" r="3" stroke="#f6e27a" stroke-width="1"/></svg>
+          <span class="placeholder-label">Add your drawing here</span>
+        </div>
+        <div class="card-overlay"><span class="overlay-hint">View</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title-txt">Portrait Study</div>
+        <div class="card-medium">Graphite</div>
+        <div class="card-dots"><div class="dot active"></div></div>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER CARD 6 -->
+    <div class="art-card" data-category="illustration" data-images='["drawing-placeholder.jpg","drawing-placeholder.jpg"]' data-title="Textile Pattern" data-medium="Marker &amp; Ink">
+      <div class="card-img-wrap">
+        <div class="placeholder">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="3" stroke="#f6e27a" stroke-width="1.2"/><path d="M6 32l10-10 8 8 6-6 12 12" stroke="#f6e27a" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="18" r="3" stroke="#f6e27a" stroke-width="1"/></svg>
+          <span class="placeholder-label">Add your drawing here</span>
+        </div>
+        <div class="img-count">2 images</div>
+        <div class="card-overlay"><span class="overlay-hint">View</span></div>
+      </div>
+      <div class="card-info">
+        <div class="card-title-txt">Textile Pattern</div>
+        <div class="card-medium">Marker &amp; Ink</div>
+        <div class="card-dots"><div class="dot active"></div><div class="dot"></div></div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+</div><!-- /page -->
+
+<script>
+// ════════════════════════════════
+// SHOOTING STAR
+// ════════════════════════════════
+(function(){
+  const c = document.getElementById('swirl');
+  const ctx = c.getContext('2d');
+  let W, H;
+  function resize(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function shootingStar(){
+    // Pick a random start point across the upper portion of sky
+    const startX = Math.random() * W * 0.7 + W * 0.1;
+    const startY = Math.random() * H * 0.3;
+    const angle  = Math.PI / 5 + (Math.random() - 0.5) * 0.3; // ~36° downward
+    const length = 180 + Math.random() * 140;
+    const speed  = 5 + Math.random() * 4;
+    const tailLen = length;
+
+    let progress = 0;
+    let glowFade = 1;
+    let done = false;
+
+    function draw(){
+      if(done) return;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const t    = Math.min(progress / tailLen, 1);
+      const headX = startX + Math.cos(angle) * progress;
+      const headY = startY + Math.sin(angle) * progress;
+      const tailX = headX - Math.cos(angle) * Math.min(progress, tailLen * 0.6);
+      const tailY = headY - Math.sin(angle) * Math.min(progress, tailLen * 0.6);
+
+      // Trail gradient
+      const grad = ctx.createLinearGradient(tailX, tailY, headX, headY);
+      grad.addColorStop(0,   'rgba(255,240,160,0)');
+      grad.addColorStop(0.6, `rgba(255,235,140,${0.18 * glowFade})`);
+      grad.addColorStop(1,   `rgba(255,248,200,${0.92 * glowFade})`);
+
+      ctx.beginPath();
+      ctx.moveTo(tailX, tailY);
+      ctx.lineTo(headX, headY);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth   = 1.8;
+      ctx.lineCap     = 'round';
+      ctx.stroke();
+
+      // Bright tip glow
+      const tipGlow = ctx.createRadialGradient(headX, headY, 0, headX, headY, 7);
+      tipGlow.addColorStop(0,   `rgba(255,255,220,${0.95 * glowFade})`);
+      tipGlow.addColorStop(0.5, `rgba(255,230,100,${0.4  * glowFade})`);
+      tipGlow.addColorStop(1,   'rgba(255,200,50,0)');
+      ctx.beginPath();
+      ctx.arc(headX, headY, 7, 0, Math.PI*2);
+      ctx.fillStyle = tipGlow;
+      ctx.fill();
+
+      progress += speed;
+
+      // Once head passes the tail length, fade out
+      if(progress > tailLen + 40){
+        glowFade -= 0.07;
+        if(glowFade <= 0){ done = true; ctx.clearRect(0,0,W,H); return; }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  }
+
+  // Fire once after a short delay, then repeat on a slow random interval
+  function schedule(){
+    const delay = 6000 + Math.random() * 10000; // 6–16s between stars
+    setTimeout(()=>{ shootingStar(); schedule(); }, delay);
+  }
+
+  // First one fires after 2.5s so the page has settled
+  setTimeout(()=>{ shootingStar(); schedule(); }, 2500);
+})();
+
+// ════════════════════════════════
+// CURSOR
+// ════════════════════════════════
+const cur=document.getElementById('cur'), ring=document.getElementById('ring');
+let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+
+// ════════════════════════════════
+// CARD ENTRANCE (IntersectionObserver)
+// ════════════════════════════════
+const io = new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'), i*80);
+      io.unobserve(e.target);
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.art-card').forEach(c=>io.observe(c));
+
+// ════════════════════════════════
+// FILTER
+// ════════════════════════════════
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.art-card').forEach(card=>{
+      const match = f==='all' || card.dataset.category===f;
+      card.style.display = match ? '' : 'none';
+    });
+  });
+});
+
+// ════════════════════════════════
+// LIGHTBOX
+// ════════════════════════════════
+const lb       = document.getElementById('lb');
+const lbImg    = document.getElementById('lbImg');
+const lbClose  = document.getElementById('lbClose');
+const lbPrev   = document.getElementById('lbPrev');
+const lbNext   = document.getElementById('lbNext');
+const lbCount  = document.getElementById('lbCounter');
+const lbTitle  = document.getElementById('lbTitle');
+const lbMedium = document.getElementById('lbMedium');
+const lbThumbs = document.getElementById('lbThumbs');
+
+let lbImages=[], lbIdx=0;
+
+function openLb(images, idx, title, medium){
+  lbImages=images; lbIdx=idx;
+  lbImg.classList.remove('zoomed','fading');
+  lbImg.src = lbImages[lbIdx];
+  lbTitle.textContent  = title  || '';
+  lbMedium.textContent = medium || '';
+  buildThumbs();
+  updateCount();
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLb(){
+  lb.classList.remove('open');
+  document.body.style.overflow='';
+  lbImg.classList.remove('zoomed');
+}
+function lbGo(dir){
+  lbIdx=(lbIdx+dir+lbImages.length)%lbImages.length;
+  lbImg.classList.add('fading');
+  setTimeout(()=>{
+    lbImg.src=lbImages[lbIdx];
+    lbImg.classList.remove('fading');
+    lbImg.classList.remove('zoomed');
+    updateCount();
+    buildThumbs();
+  },200);
+}
+function updateCount(){
+  lbCount.textContent = lbImages.length > 1 ? (lbIdx+1)+' / '+lbImages.length : '';
+}
+function buildThumbs(){
+  if(lbImages.length<2){ lbThumbs.style.display='none'; return; }
+  lbThumbs.style.display='flex';
+  lbThumbs.innerHTML='';
+  lbImages.forEach((src,i)=>{
+    const img=document.createElement('img');
+    img.src=src; img.className='lb-thumb'+(i===lbIdx?' active':'');
+    img.addEventListener('click',()=>{ lbIdx=i; lbGo(0); });
+    lbThumbs.appendChild(img);
+  });
+}
+
+lbImg.addEventListener('click',()=>lbImg.classList.toggle('zoomed'));
+lbClose.addEventListener('click',closeLb);
+lbPrev.addEventListener('click',()=>lbGo(-1));
+lbNext.addEventListener('click',()=>lbGo(1));
+lb.addEventListener('click',e=>{ if(e.target===lb) closeLb(); });
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('open')) return;
+  if(e.key==='Escape') closeLb();
+  if(e.key==='ArrowLeft') lbGo(-1);
+  if(e.key==='ArrowRight') lbGo(1);
+});
+
+// Swipe support
+let tx=0;
+lb.addEventListener('touchstart',e=>{ tx=e.touches[0].clientX; },{passive:true});
+lb.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50) lbGo(dx<0?1:-1);
+},{passive:true});
+
+// Attach card click handlers
+document.querySelectorAll('.art-card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    const imgs  = JSON.parse(card.dataset.images||'[]');
+    const title = card.dataset.title  || '';
+    const med   = card.dataset.medium || '';
+    if(!imgs.length) return;
+    openLb(imgs, 0, title, med);
+  });
+});
+
+// Cursor grow near cards
+document.querySelectorAll('.art-card').forEach(c=>{
+  c.addEventListener('mouseenter',()=>{ ring.style.width='52px';ring.style.height='52px';ring.style.borderColor='rgba(246,226,122,0.5)'; });
+  c.addEventListener('mouseleave',()=>{ ring.style.width='30px';ring.style.height='30px';ring.style.borderColor='rgba(246,226,122,0.38)'; });
+});
+</script>
+</body>
+</html>
