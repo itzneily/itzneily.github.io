@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Art Journal — Neelima Asok</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=IM+Fell+English:ital@0;1&family=Cinzel:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --beige:   #f5efe6;
+  --paper:   #e8dcc8;
+  --paper2:  #dfd3ba;
+  --brown:   #c9b99a;
+  --grey:    #777777;
+  --ink:     #1a1a1a;
+  --red:     #a26769;
+  --olive:   #7a8b5c;
+  --cream:   #faf6ef;
+  --tape:    rgba(200,185,150,0.55);
+}
+
+html{ scroll-behavior:smooth }
+body{
+  min-height:100vh;
+  background:var(--beige);
+  font-family:'Cormorant Garamond',serif;
+  color:var(--ink);
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ════════════════════════════════
+   PAPER TEXTURE BACKGROUND
+   ════════════════════════════════ */
+body::before{
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+/* Soft warm vignette */
+body::after{
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background:
+    radial-gradient(ellipse 90% 80% at 50% 50%, transparent 45%, rgba(180,155,120,0.10) 100%),
+    linear-gradient(to right, rgba(180,155,120,0.06) 0%, transparent 30%, transparent 70%, rgba(180,155,120,0.06) 100%);
+  pointer-events:none;
+}
+
+/* ════════════════════════════════
+   CURSOR
+   ════════════════════════════════ */
+.cur{ position:fixed;width:6px;height:6px;background:var(--ink);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);opacity:0.7 }
+.cur-ring{ position:fixed;width:28px;height:28px;border:1px solid rgba(26,26,26,0.22);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .22s,height .22s,border-color .22s }
+
+/* ════════════════════════════════
+   PAGE
+   ════════════════════════════════ */
+.page{
+  position:relative; z-index:1;
+  max-width:1200px; margin:0 auto;
+  padding:0 40px 100px;
+  min-height:100vh;
+  display:flex; flex-direction:column;
+}
+
+/* ── Nav ── */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:34px 0 0;
+  margin-bottom:56px;
+  animation:fadeDown .6s ease both;
+}
+@keyframes fadeDown{ from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none} }
+.back-link{
+  font-family:'Cinzel',serif; font-size:10.5px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(26,26,26,0.4); text-decoration:none;
+  display:flex; align-items:center; gap:7px;
+  transition:color .28s;
+}
+.back-link::before{ content:'←'; font-size:12px }
+.back-link:hover{ color:var(--ink) }
+.nav-name{
+  font-family:'Cinzel',serif; font-size:9.5px; font-weight:300;
+  letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(26,26,26,0.25);
+}
+
+/* ── Hero ── */
+.hero{
+  text-align:center;
+  margin-bottom:72px;
+  animation:fadeUp .9s ease .1s both;
+}
+@keyframes fadeUp{ from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+
+.hero-eyebrow{
+  font-family:'Caveat',cursive; font-size:14px; font-weight:400;
+  color:rgba(26,26,26,0.35); letter-spacing:.12em;
+  margin-bottom:10px;
+}
+.hero-title{
+  font-family:'Caveat',cursive;
+  font-size:clamp(52px,8vw,96px);
+  font-weight:700; line-height:1;
+  color:var(--ink);
+  position:relative; display:inline-block;
+}
+/* Ink underline drawn in */
+.hero-title::after{
+  content:'';
+  position:absolute; left:4% bottom:-6px;
+  width:0; height:2px;
+  background: linear-gradient(to right, var(--red), var(--olive), transparent);
+  border-radius:2px;
+  animation:drawLine 1.2s cubic-bezier(.4,0,.2,1) .7s forwards;
+}
+@keyframes drawLine{
+  to{ width:92% }
+}
+.hero-sub{
+  font-family:'IM Fell English',serif; font-style:italic;
+  font-size:clamp(14px,1.5vw,18px);
+  color:rgba(26,26,26,0.45); margin-top:20px;
+  letter-spacing:.03em;
+}
+
+/* ════════════════════════════════
+   THREE SECTION CARDS
+   ════════════════════════════════ */
+.sections{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:28px;
+  flex:1;
+  align-items:start;
+}
+
+/* ── Base card ── */
+.section-card{
+  position:relative;
+  border-radius:6px;
+  text-decoration:none; color:var(--ink);
+  display:flex; flex-direction:column;
+  cursor:pointer;
+  transition:transform .40s cubic-bezier(.22,.68,0,1.18), box-shadow .40s ease;
+  animation:fadeUp .7s ease both;
+}
+.section-card:nth-child(1){ animation-delay:.20s }
+.section-card:nth-child(2){ animation-delay:.32s }
+.section-card:nth-child(3){ animation-delay:.44s }
+
+/* Paper stack layers — pseudo elements */
+.section-card::before,
+.section-card::after{
+  content:'';
+  position:absolute; inset:0;
+  border-radius:5px;
+  background:var(--paper);
+  z-index:0;
+}
+.section-card::before{ transform:rotate(-2.2deg) translateY(6px); opacity:.65 }
+.section-card::after{  transform:rotate( 1.4deg) translateY(4px); opacity:.5  }
+
+.card-body{
+  position:relative; z-index:1;
+  background:var(--cream);
+  border-radius:6px;
+  overflow:hidden;
+  box-shadow:
+    0 2px 8px rgba(100,80,50,0.10),
+    0 6px 24px rgba(100,80,50,0.08);
+  transition:box-shadow .4s ease;
+}
+
+.section-card:hover{
+  transform:translateY(-8px) scale(1.015) rotate(0deg);
+}
+.section-card:hover .card-body{
+  box-shadow:
+    0 12px 36px rgba(100,80,50,0.18),
+    0 3px 10px rgba(100,80,50,0.10);
+}
+
+/* ── Image area ── */
+.card-visual{
+  width:100%;
+  height:220px;
+  position:relative;
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* ── JUNK JOURNAL card ── */
+.junk .card-body{ background:#f7f0e4; }
+.junk .card-visual{ background:#ede3d0; }
+.junk-inner{
+  position:relative; width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+}
+/* Tape strip top */
+.tape{
+  position:absolute;
+  background:var(--tape);
+  backdrop-filter:blur(1px);
+  border:none;
+}
+.tape-h{ height:22px; left:-10px; right:-10px; }
+.tape-top{ top:18px; transform:rotate(-1.5deg); }
+.tape-mid{ bottom:40px; transform:rotate(1deg); width:55%; left:20%; height:18px; }
+.tape-v{ width:22px; top:-10px; bottom:-10px; transform:rotate(1deg); right:30%; }
+
+/* Layered paper scraps */
+.scrap{
+  position:absolute;
+  background:var(--paper2);
+  border-radius:2px;
+  box-shadow:1px 2px 6px rgba(80,60,30,0.12);
+}
+.scrap1{ width:65%; height:55%; bottom:15%; left:10%; transform:rotate(-4deg); background:#e2d8c4; }
+.scrap2{ width:50%; height:40%; top:12%; right:8%; transform:rotate(3deg); background:#ede5d2; }
+.scrap3{ width:35%; height:30%; top:28%; left:18%; transform:rotate(-1.5deg); background:#d8cebc; }
+
+.junk-label{
+  position:relative; z-index:2;
+  font-family:'Caveat',cursive; font-size:22px; font-weight:600;
+  color:rgba(26,26,26,0.55);
+  text-align:center;
+  line-height:1.2;
+  text-shadow:1px 1px 0 rgba(255,255,255,0.6);
+}
+
+/* ── SKETCHBOOK card ── */
+.sketch .card-body{ background:#fafaf8; }
+.sketch .card-visual{
+  background:#f5f5f2;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+}
+/* SVG pencil sketch illustration */
+.sketch-svg{ opacity:.55; }
+
+/* ── BULLET JOURNAL card ── */
+.bullet .card-body{ background:#f8f6f2; }
+.bullet .card-visual{ background:#f2ede4; }
+.bullet-grid{
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(100,80,50,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100,80,50,0.07) 1px, transparent 1px);
+  background-size:22px 22px;
+}
+.bullet-inner{
+  position:relative; z-index:1;
+  padding:20px 24px;
+  width:100%;
+}
+.bullet-row{
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:12px;
+}
+.bullet-box{
+  width:13px; height:13px;
+  border:1.4px solid rgba(26,26,26,0.3);
+  border-radius:2px; flex-shrink:0;
+  position:relative;
+}
+.bullet-box.checked::after{
+  content:'✓';
+  position:absolute; top:-2px; left:1px;
+  font-size:11px; color:var(--olive); font-family:sans-serif;
+}
+.bullet-line{
+  height:1px; flex:1;
+  background:rgba(26,26,26,0.14);
+  border-radius:1px;
+}
+.bullet-line.short{ flex:0 0 40%; }
+.bullet-line.med{   flex:0 0 65%; }
+
+/* ── Card content (below visual) ── */
+.card-content{
+  padding:22px 24px 26px;
+}
+.card-tag{
+  font-family:'Cinzel',serif; font-size:8.5px; font-weight:300;
+  letter-spacing:.28em; text-transform:uppercase;
+  color:rgba(26,26,26,0.32); margin-bottom:10px;
+  display:flex; align-items:center; gap:7px;
+}
+.card-tag::before{
+  content:''; display:block;
+  width:18px; height:1px;
+  background:currentColor; opacity:.5;
+}
+.card-heading{
+  font-family:'Caveat',cursive;
+  font-size:28px; font-weight:700;
+  line-height:1.1; color:var(--ink);
+  margin-bottom:10px;
+}
+.card-desc{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px; font-weight:300;
+  color:rgba(26,26,26,0.52);
+  line-height:1.75; letter-spacing:.02em;
+  margin-bottom:18px;
+}
+.card-cta{
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:'Cinzel',serif; font-size:9px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(26,26,26,0.45);
+  transition:color .25s, gap .25s;
+}
+.card-cta::after{ content:'→'; transition:transform .25s }
+.section-card:hover .card-cta{ color:var(--ink); gap:12px }
+.section-card:hover .card-cta::after{ transform:translateX(3px) }
+
+/* Colour accent strip at bottom edge */
+.accent-strip{
+  height:3px; border-radius:0 0 6px 6px;
+}
+.junk   .accent-strip{ background:linear-gradient(to right,var(--red),#c8a07a) }
+.sketch .accent-strip{ background:linear-gradient(to right,#8a9a7a,var(--olive)) }
+.bullet .accent-strip{ background:linear-gradient(to right,#8a9aaa,#6a7a8a) }
+
+/* Handwritten corner label */
+.corner-label{
+  position:absolute; z-index:3;
+  font-family:'Caveat',cursive; font-size:11px;
+  color:rgba(26,26,26,0.28); letter-spacing:.04em;
+  pointer-events:none;
+}
+.corner-label.tl{ top:10px; left:12px }
+.corner-label.tr{ top:10px; right:12px; text-align:right }
+
+/* Tape decoration on junk card */
+.deco-tape{
+  position:absolute; z-index:4;
+  width:50px; height:16px;
+  background:rgba(195,180,148,0.52);
+  transform:rotate(-35deg);
+  top:-4px; left:22px;
+  border-radius:1px;
+}
+
+/* ════════════════════════════════
+   FOOTER
+   ════════════════════════════════ */
+.footer{
+  margin-top:64px;
+  padding-top:22px;
+  border-top:1px solid rgba(26,26,26,0.07);
+  display:flex; justify-content:space-between;
+  font-family:'Cinzel',serif; font-size:9px; font-weight:300;
+  letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(26,26,26,0.22);
+}
+
+/* ════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════ */
+@media(max-width:860px){
+  .sections{ grid-template-columns:1fr; gap:48px; }
+  .section-card{ max-width:480px; margin:0 auto; width:100% }
+  .page{ padding:0 24px 80px }
+}
+@media(max-width:480px){
+  .card-visual{ height:180px }
+  .page{ padding:0 16px 60px }
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="ring"></div>
+
+<div class="page">
+
+  <!-- Nav -->
+  <nav class="topbar">
+    <a class="back-link" href="index.html">Portfolio</a>
+    <div class="nav-name">Neelima Asok</div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-eyebrow">personal creative space</div>
+    <h1 class="hero-title">Art Journal</h1>
+    <p class="hero-sub">Fragments of process, thoughts, and creation</p>
+  </header>
+
+  <!-- Three sections -->
+  <div class="sections">
+
+    <!-- ── JUNK JOURNAL ── -->
+    <a class="section-card junk" href="junk-journal.html">
+      <div class="deco-tape"></div>
+      <div class="card-body">
+        <div class="card-visual">
+          <div class="junk-inner">
+            <div class="scrap scrap1"></div>
+            <div class="scrap scrap2"></div>
+            <div class="scrap scrap3"></div>
+            <div class="tape tape-h tape-top"></div>
+            <div class="tape tape-h tape-mid"></div>
+            <div class="tape tape-v"></div>
+            <div class="junk-label">bits &amp;<br/>pieces</div>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-tag">Vol. 01</div>
+          <div class="card-heading">Junk Journal</div>
+          <p class="card-desc">Collaged scraps, mixed media experiments, and the beautiful mess of making. Nothing is precious here.</p>
+          <span class="card-cta">Explore</span>
+        </div>
+        <div class="accent-strip"></div>
+      </div>
+    </a>
+
+    <!-- ── SKETCHBOOK ── -->
+    <a class="section-card sketch" href="sketchbook.html">
+      <div class="card-body">
+        <div class="card-visual">
+          <span class="corner-label tl" style="opacity:.18">pg. 01</span>
+          <!-- Open sketchbook illustration -->
+          <svg class="sketch-svg" width="210" height="165" viewBox="0 0 210 165" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Book spine -->
+            <rect x="98" y="18" width="6" height="128" rx="1" fill="rgba(26,26,26,0.10)" stroke="rgba(26,26,26,0.18)" stroke-width="0.8"/>
+            <!-- Left page -->
+            <rect x="28" y="20" width="70" height="124" rx="3" fill="rgba(255,255,255,0.7)" stroke="rgba(26,26,26,0.14)" stroke-width="1"/>
+            <!-- Left page lines -->
+            <line x1="38" y1="42" x2="88" y2="42" stroke="rgba(26,26,26,0.12)" stroke-width="0.8"/>
+            <line x1="38" y1="52" x2="88" y2="52" stroke="rgba(26,26,26,0.12)" stroke-width="0.8"/>
+            <line x1="38" y1="62" x2="88" y2="62" stroke="rgba(26,26,26,0.12)" stroke-width="0.8"/>
+            <line x1="38" y1="72" x2="88" y2="72" stroke="rgba(26,26,26,0.12)" stroke-width="0.8"/>
+            <line x1="38" y1="82" x2="88" y2="82" stroke="rgba(26,26,26,0.12)" stroke-width="0.8"/>
+            <!-- Small sketch on left page -->
+            <path d="M42 95 C50 85 62 88 68 95 C74 102 72 112 64 116 C56 120 44 116 42 108 C40 100 42 95 42 95Z" stroke="rgba(26,26,26,0.35)" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <path d="M48 100 C54 96 62 98 65 104" stroke="rgba(26,26,26,0.2)" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+            <!-- Right page -->
+            <rect x="104" y="20" width="70" height="124" rx="3" fill="rgba(255,255,255,0.6)" stroke="rgba(26,26,26,0.12)" stroke-width="1"/>
+            <!-- Gesture drawing on right page — loose flower -->
+            <path d="M139 55 C139 55 135 48 138 44 C141 40 145 43 144 48" stroke="rgba(26,26,26,0.38)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <path d="M139 55 C139 55 132 52 130 47 C128 42 132 39 136 43" stroke="rgba(26,26,26,0.38)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <path d="M139 55 C139 55 133 60 130 58 C127 56 128 51 133 51" stroke="rgba(26,26,26,0.38)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <path d="M139 55 C139 55 145 60 147 57 C149 54 147 49 142 51" stroke="rgba(26,26,26,0.38)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <path d="M139 55 C139 55 145 50 147 45 C149 40 145 38 141 42" stroke="rgba(26,26,26,0.38)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <circle cx="139" cy="55" r="4" stroke="rgba(26,26,26,0.3)" stroke-width="1" fill="rgba(26,26,26,0.06)"/>
+            <path d="M139 59 L139 78" stroke="rgba(26,26,26,0.28)" stroke-width="1" stroke-linecap="round"/>
+            <path d="M139 68 C143 65 148 67 150 72" stroke="rgba(26,26,26,0.22)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+            <!-- Pencil -->
+            <rect x="152" y="90" width="7" height="36" rx="1.5" transform="rotate(-32 152 90)" fill="rgba(240,220,140,0.7)" stroke="rgba(26,26,26,0.22)" stroke-width="0.8"/>
+            <path d="M143 121 L147 118 L150 124 Z" fill="rgba(26,26,26,0.55)"/>
+            <rect x="152" y="90" width="7" height="5" rx="1" transform="rotate(-32 152 90)" fill="rgba(200,160,120,0.6)" stroke="rgba(26,26,26,0.15)" stroke-width="0.6"/>
+            <!-- Small squiggly test lines near pencil tip -->
+            <path d="M136 128 C138 126 140 130 142 128" stroke="rgba(26,26,26,0.2)" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+            <path d="M134 133 C137 131 139 135 141 133" stroke="rgba(26,26,26,0.16)" stroke-width="0.7" fill="none" stroke-linecap="round"/>
+            <!-- Page curl bottom right -->
+            <path d="M174 144 C168 138 164 142 170 148 C170 148 172 144 174 144Z" fill="rgba(220,210,195,0.6)" stroke="rgba(26,26,26,0.10)" stroke-width="0.6"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="card-tag">Vol. 02</div>
+          <div class="card-heading">Sketchbook</div>
+          <p class="card-desc">Raw ideas, gesture drawings, and visual thinking. Where everything starts before it becomes anything.</p>
+          <span class="card-cta">Explore</span>
+        </div>
+        <div class="accent-strip"></div>
+      </div>
+    </a>
+
+    <!-- ── BULLET JOURNAL ── -->
+    <a class="section-card bullet" href="bullet-journal.html">
+      <div class="card-body">
+        <div class="card-visual">
+          <div class="bullet-grid"></div>
+          <div class="bullet-inner" style="padding-top:44px;">
+            <div class="bullet-row">
+              <div class="bullet-box checked"></div>
+              <div class="bullet-line med"></div>
+            </div>
+            <div class="bullet-row">
+              <div class="bullet-box checked"></div>
+              <div class="bullet-line"></div>
+            </div>
+            <div class="bullet-row">
+              <div class="bullet-box"></div>
+              <div class="bullet-line short"></div>
+            </div>
+            <div class="bullet-row" style="margin-top:8px">
+              <div class="bullet-box"></div>
+              <div class="bullet-line med"></div>
+            </div>
+            <div class="bullet-row">
+              <div class="bullet-box checked"></div>
+              <div class="bullet-line short"></div>
+            </div>
+            <!-- tiny decorative header line -->
+            <div style="position:absolute;top:14px;left:24px;right:24px;height:1px;background:rgba(26,26,26,0.12)"></div>
+            <div style="position:absolute;top:20px;left:24px;font-family:'Caveat',cursive;font-size:13px;color:rgba(26,26,26,0.3)">March 2025</div>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="card-tag">Vol. 03</div>
+          <div class="card-heading">Bullet Journal</div>
+          <p class="card-desc">Structured pages, trackers, and planning spreads. The organised side of a creative mind.</p>
+          <span class="card-cta">Explore</span>
+        </div>
+        <div class="accent-strip"></div>
+      </div>
+    </a>
+
+  </div><!-- /sections -->
+
+  <footer class="footer">
+    <span>Neelima Asok &nbsp;·&nbsp; Art Journal</span>
+    <span>Process &nbsp;·&nbsp; 2024–2025</span>
+  </footer>
+
+</div><!-- /page -->
+
+<script>
+// Cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=innerWidth/2,my=innerHeight/2,rx=mx,ry=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.11;ry+=(my-ry)*.11;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
+
+// Cursor grow near cards
+document.querySelectorAll('.section-card').forEach(c=>{
+  c.addEventListener('mouseenter',()=>{ring.style.width='44px';ring.style.height='44px';ring.style.borderColor='rgba(26,26,26,0.3)';});
+  c.addEventListener('mouseleave',()=>{ring.style.width='28px';ring.style.height='28px';ring.style.borderColor='rgba(26,26,26,0.22)';});
+});
+
+// Scroll-in on cards
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='none'; io.unobserve(e.target); }});
+},{threshold:0.15});
+document.querySelectorAll('.section-card').forEach(c=>io.observe(c));
+</script>
+</body>
+</html>
